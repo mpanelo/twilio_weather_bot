@@ -33,8 +33,10 @@ def validate(request):
 
 
 def get_geocoding(message_body):
-    address = message_body.split()[2:]
+    address_chunks = message_body.lower().split()[2:]
+    address = ' '.join(address_chunks)
     result = gmaps.geocode(address)[0]
+
     return {
         'address': result['formatted_address'],
         'lat': result['geometry']['location']['lat'],
