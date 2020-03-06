@@ -48,19 +48,29 @@ def generate_weather_report(geocoding, forecast):
     time = current_forecast['time']
     timezone = pytz.timezone(forecast['timezone'])
 
-    summary = current_forecast['summary']
-    precip_probability = current_forecast['precipProbability'] * 100
-    precip_type = current_forecast['precipType']
+    summary = current_forecast.get('summary', 'No Summary Given')
+    temperature = current_forecast.get('temperature', 'No Temperature Information Given')
 
     dt = datetime.fromtimestamp(time, tz=timezone)
     formatted_date = dt.strftime("%Y-%m-%d %H:%M:%S")
+    precipitation_report = get_precipitation_report(current_forecast)
 
     return (
         f"{geocoding['address'].upper()} WEATHER REPORT [{formatted_date}]:\n"
-        f"Temperature: {current_forecast['temperature']}\n"
-        f"Precipitation: {precip_probability}% of {precip_type}\n"
+        f"Temperature: {temperature}\n"
+        f"Precipitation: {precipitation_report}\n"
         f"Summary: {summary}"
     )
+
+
+def get_precipitation_report(current_forecast):
+    precip_probability = current_forecast.get('precipProbability', 0)
+    precip_type = current_forecast.get('precipType')
+
+    if precip_type is not None and precip_probability != 0:
+        return f"{precip_probability * 100} of {precip_type}"
+
+    return 'No Precipitation Information Given'
 
 
 def reply_with(body):
