@@ -8,6 +8,7 @@ from twilio.request_validator import RequestValidator
 from twilio.twiml.messaging_response import MessagingResponse, Message
 
 gmaps = googlemaps.Client(key=os.environ.get('GMAPS_API_KEY'))
+URL = f"https://us-central1-{os.environ.get('GCP_PROJECT')}.cloudfunctions.net/twilio_weather_bot"
 
 
 def twilio_weather_bot(request):
@@ -23,9 +24,9 @@ def validate(request):
     validator = RequestValidator(os.environ.get('TWILIO_AUTH_TOKEN'))
 
     request_valid = validator.validate(
-        request.url,
+        URL,
         request.form,
-        request.headers.get('X-TWILIO-SIGNATURE', ''))
+        request.headers.get('X-Twilio-Signature', ''))
 
     if not request_valid:
         abort(403)
